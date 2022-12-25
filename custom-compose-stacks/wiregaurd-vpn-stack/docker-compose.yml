@@ -1,0 +1,76 @@
+version: '3.9'
+services:
+  wireguard:
+    image: lscr.io/linuxserver/wireguard:latest
+    container_name: wireguard
+    hostname: wireguard
+    cap_add:
+      - NET_ADMIN
+      - SYS_MODULE
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Chicago
+      - SERVERURL=wireguard.molovestoshare.com #optional
+      - SERVERPORT=51820 #optional
+      - PEERS=1 #optional
+      - PEERDNS=auto #optional
+      - INTERNAL_SUBNET=10.13.13.0 #optional
+      - ALLOWEDIPS=0.0.0.0/0 #optional
+      - LOG_CONFS=true #optional
+    volumes:
+      - /data/compose/wiregaurd:/config
+      - /lib/modules:/lib/modules #optional
+    networks:
+      - pihole_default
+      - vpn-traffic
+    ports:
+      - 51820:51820/udp
+    sysctls:
+      net.ipv4.conf.all.src_valid_mark: 1
+    restart: unless-stopped
+  prowlarr:
+    depends_on:
+      - wireguard
+    image: lscr.io/linuxserver/prowlarr:develop
+    container_name: prowlarr
+    hostname: prowlarr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Amcerica/Chicago
+    volumes:
+      - /data/compose/prowlarr:/config
+    networks:
+      - pihole_default
+      - vpn-traffic
+    ports:
+      - 9696:9696
+    restart: unless-stopped
+  transmission:
+    depends_on:
+      - wireguard
+    container_name: transmission-vpn-container
+    hostname: transmission
+    domainname: transmission.molovestoshare.com
+    environment:
+      TZ: "America/Chicago"
+      PGID: "1000"
+      PUID: "1000"
+    image: lscr.io/linuxserver/transmission:latest
+    networks:
+      - pihole_default
+      - vpn-traffic
+    ports:
+      - "${PORT:-9091}:9091"
+      - "${PORT:-51413}:51413"
+    restart: unless-stopped
+    volumes:
+      - /data/compose/transmission:/config
+      - /home/monash/Backup_Disk/media/downloads:/downloads/:rw
+
+networks:
+  pihole_default:
+    external: true
+  vpn-traffic:
+    internal: true

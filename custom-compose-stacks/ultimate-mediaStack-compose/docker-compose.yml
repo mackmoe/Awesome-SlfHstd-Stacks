@@ -1,0 +1,120 @@
+---
+version: '3.9'
+services:
+  plex:
+    image: lscr.io/linuxserver/plex:latest
+    container_name: plex-ums
+    hostname: plex
+    domainname: plex.yourdomain.righthurr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - VERSION=docker
+      - TZ=America/Chicago
+      - runtime=nvidia
+      - PLEX_CLAIM=claim-TdqeS7NCCZsAjvpxAa93 # Generate new claim codes here: https://www.plex.tv/claim/
+    volumes:
+      - /data/compose/plex/config:/config
+      - /data/compose/plex/transcodes:/transcodes
+      - /data/compose/media/tv:/tv
+      - /data/compose/media/movies:/movies
+    networks:
+      - pihole_default
+      - media-traffic
+    ports:
+      - 3005:3005
+      - 8324:8324
+      - 32400:32400
+      - 32469:32469
+      - :5353/udp
+      - :1900/udp
+      - :32410/udp
+      - :32412/udp
+      - :32413/udp
+      - :32414/udp
+    restart: unless-stopped
+  radarr:
+    image: lscr.io/linuxserver/radarr:latest
+    container_name: radarr-ums
+    hostname: radarr
+    domainname: radarr.yourdomain.righthurr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Chicago
+    volumes:
+      - /data/compose/radarr:/config
+      - /home/monash/Backup_Disk/media/movies:/movies #optional
+      - /home/monash/Backup_Disk/media/downloads:/downloads #optional
+    networks:
+      - pihole_default
+      - media-traffic
+    networks:
+      - pihole_default
+      - media-traffic
+    ports:
+      - 7878:7878
+    restart: unless-stopped
+  sonarr:
+    image: lscr.io/linuxserver/sonarr:latest
+    container_name: sonarr-ums
+    hostname: sonarr
+    domainname: sonarr.yourdomain.righthurr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Chicago
+    volumes:
+      - /data/compose/sonarr:/config
+    networks:
+      - pihole_default
+      - media-traffic
+    networks:
+      - pihole_default
+      - media-traffic
+    dns_search: pihole.molovestoshare.com
+    hostname: tautulli
+    domainname: tautulli.molovestoshare.com
+    ports:
+      - 8989:8989
+    restart: unless-stopped
+  tautulli:
+    image: lscr.io/linuxserver/tautulli:latest
+    container_name: tautulli-ums
+    hostname: tautulli
+    domainname: tautulli.yourdomain.righthurr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Chicago
+    volumes:
+      - /data/compose/tautulli/config:/config
+    networks:
+      - pihole_default
+      - media-traffic
+    ports:
+      - 8181:8181
+    restart: unless-stopped
+  ombi:
+    image: lscr.io/linuxserver/ombi:latest
+    container_name: ombi-ums
+    hostname: ombi
+    domainname: ombi.yourdomain.righthurr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Chicago
+    volumes:
+      - /data/compose/ombi/config:/config
+    networks:
+      - pihole_default
+      - media-traffic
+    ports:
+      - 3579:3579
+    restart: unless-stopped
+
+networks:
+  pihole_default:
+    external: true
+  media-traffic:
+    internal: true
