@@ -6,44 +6,12 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     ports:
-      - 8080:8080
-    networks:
-      - monitor-net
+      - 9999:8080
     environment:
       DOZZLE_LEVEL: trace
     healthcheck:
       test: [ "CMD", "/dozzle", "healthcheck" ]
-      interval: 3s
-      timeout: 30s
-      retries: 3
-      start_period: 60s
-
-  cadvisor:
-    container_name: cadvisor
-    image: google/cadvisor:v0.39.3
-    privileged: true
-    ports:
-      - '2200:2200'
-    command:
-      - "--housekeeping_interval=30s"
-      - "--docker_only=true"
-      - "--disable_metrics=percpu,sched,tcp,udp,disk,diskIO,accelerator,hugetlb,referenced_memory,cpu_topology,resctrl"
-    devices:
-      - /dev/kmsg:/dev/kmsg
-    volumes:
-      - /var/lib/docker/:/var/lib/docker:ro
-      - /dev/disk/:/dev/disk:ro
-      - /sys:/sys:ro
-      - /var/run:/var/run:rw
-      - /:/rootfs:ro
-      - /sys/fs/cgroup:/cgroup:ro
-      - /etc/machine-id:/etc/machine-id:ro
-      - /etc/localtime:/etc/localtime:ro
-    expose:
-      - 8080
-    networks:
-      - monitor-net
-    labels:
-    org.label-schema.group: "monitoring"
-    restart: unless-stopped
-    
+      interval: 5s
+      timeout: 10s
+      retries: 6
+      start_period: 30s
