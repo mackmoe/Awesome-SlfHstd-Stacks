@@ -1,17 +1,18 @@
-# dockprom
+# Yes, I borrowed everything from [stefanprodan/dockprom](https://github.com/stefanprodan/dockprom) 
 
-#### IMPORTANT NOTE - Run `docker compose up -d` from the directory or the Portainer Deployment will not work
+#### IMPORTANT NOTE - Run `docker compose up -d` from the directory, Portainer Deployment will not work as is
+
 
 A monitoring solution for Docker hosts and containers with [Prometheus](https://prometheus.io/), [Grafana](http://grafana.org/), [cAdvisor](https://github.com/google/cadvisor),
 [NodeExporter](https://github.com/prometheus/node_exporter) and alerting with [AlertManager](https://github.com/prometheus/alertmanager).
 
 ## Install
 
-Clone this repository on your Docker host, cd into dockprom directory and run compose up:
+Clone this repository on your Docker host, cd into this directory and run compose up:
 
 ```bash
-git clone https://github.com/stefanprodan/dockprom
-cd dockprom
+git clone https://github.com/mackmoe/Awesome-SlfHstd-Stacks.git
+cd custom-compose-stacks/grafana-prometheus-compose
 
 ADMIN_USER='admin' ADMIN_PASSWORD='admin' ADMIN_PASSWORD_HASH='$2a$14$1l.IozJx7xQRVmlkEQ32OeEEfP5mRxTpbDTCTcXRqn19gXD8YK1pO' docker-compose up -d
 ```
