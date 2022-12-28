@@ -4,73 +4,61 @@ services:
     image: lscr.io/linuxserver/wireguard:latest
     container_name: wireguard
     hostname: wireguard
+    domainname: wireguard.molovestoshare.com
     cap_add:
       - NET_ADMIN
       - SYS_MODULE
     environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=America/Chicago
-      - SERVERURL=wireguard.molovestoshare.com #optional
-      - SERVERPORT=51820 #optional
-      - PEERS=1 #optional
-      - PEERDNS=auto #optional
-      - INTERNAL_SUBNET=10.13.13.0 #optional
-      - ALLOWEDIPS=0.0.0.0/0 #optional
-      - LOG_CONFS=true #optional
+      PUID: 1000
+      PGID: 1000
+      LOG_CONFS: true #optional
+      TZ: America/Chicago
+      SERVERPORT: 51820 #optional
+      PEERS: 3 #optional
+      PEERDNS: auto #optional
+      ALLOWEDIPS: 0.0.0.0/0 #optional
     volumes:
-      - /data/compose/wiregaurd:/config
-      - /lib/modules:/lib/modules #optional
+      - ./templates/wg0.conf:/data/compose/wiregaurd-stack/templates
+      - ./templates/Corefile:/data/compose/wiregaurd-stack/coredns
+      - ./templates/configs:/data/compose/wiregaurd-stack
+      - /lib/modules:/lib/modules
     networks:
-      - pihole_default
       - vpn-traffic
     ports:
       - 51820:51820/udp
     sysctls:
       net.ipv4.conf.all.src_valid_mark: 1
     restart: unless-stopped
-  prowlarr:
-    depends_on:
-      - wireguard
-    image: lscr.io/linuxserver/prowlarr:develop
-    container_name: prowlarr
-    hostname: prowlarr
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=Amcerica/Chicago
-    volumes:
-      - /data/compose/prowlarr:/config
-    networks:
-      - pihole_default
-      - vpn-traffic
-    ports:
-      - 9696:9696
-    restart: unless-stopped
+
   transmission:
-    depends_on:
+    links:
       - wireguard
-    container_name: transmission-vpn-container
+    container_name: transmission
     hostname: transmission
     domainname: transmission.molovestoshare.com
     environment:
+      USER: monash #optional
+      PASS: ~Z0vJE8Q_S4wezp6r@)u>9:52N/T\lM1 #optional
+      # WHITELIST: [] #must be a string, number, boolean or null
+      PEERPORT: 51413 #optional
       TZ: "America/Chicago"
       PGID: "1000"
       PUID: "1000"
     image: lscr.io/linuxserver/transmission:latest
     networks:
-      - pihole_default
       - vpn-traffic
+      - media-seeking-stack_default
     ports:
-      - "${PORT:-9091}:9091"
-      - "${PORT:-51413}:51413"
-    restart: unless-stopped
+      - 9876:9091
+      - 51413:51413
+      - 51413:51413/udp
     volumes:
       - /data/compose/transmission:/config
       - /home/monash/Backup_Disk/media/downloads:/downloads/:rw
+    restart: unless-stopped
 
 networks:
-  pihole_default:
-    external: true
   vpn-traffic:
     internal: true
+  media-seeking-stack_default:
+    external: true

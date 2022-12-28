@@ -1,0 +1,41 @@
+version: "2.1"
+services:
+  heimdall:
+    image: linuxserver/heimdall
+    container_name: heimdall
+    volumes:
+      - /home/user/appdata/heimdall:/config
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/London
+    ports:
+      - 80:80
+      - 443:443
+    restart: unless-stopped
+  nginx:
+    image: linuxserver/nginx
+    container_name: nginx
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/London
+    volumes:
+      - /home/user/appdata/nginx:/config
+    ports:
+      - 81:80
+      - 444:443
+    restart: unless-stopped
+  mariadb:
+    image: linuxserver/mariadb
+    container_name: mariadb
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - MYSQL_ROOT_PASSWORD=ROOT_ACCESS_PASSWORD
+      - TZ=Europe/London
+    volumes:
+      - /home/user/appdata/mariadb:/config
+    ports:
+      - 3306:3306
+    restart: unless-stopped

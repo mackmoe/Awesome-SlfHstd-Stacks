@@ -3,18 +3,18 @@
 
 A brief description of what this project does and who it's for:
 
-I got sick of blowing away my stuff and having to build everything from scratch... everytime. Most this stuff is inspired by a need, then by borrowing ideas from other people.
+I got sick of blowing away my stuff and having to build everything from scratch everytime. Most of this stuff is inspired by a need or, by borrowing ideas from other people for my own needs but... it's totally cool if it helps you out. 
 
 
 
 ## Environment Variables
 
-Check the following files for the the variables that you musg change:
+Check the following files for the the variables that you might have to change. WARNING - THERE BE DRAGONS!
 
 
 ## Deployment
 
-To deploy any compose stack from this project, cd into the stack you want to create (beware, there be dragons lurking), make sure you update any variables (dont worry... they're pretty obvious if they are), then run the floowing command
+To deploy any compose stack, cd into the stack you want to create, make sure you update any variables (dont worry... they're pretty obvious if they are any), then run
 
 ```bash
   docker compose up -d # Stands up the stack and creates the resources for them if they don't exsist (assuming all permissions are corect)
@@ -26,7 +26,7 @@ To deploy any compose stack from this project, cd into the stack you want to cre
 
 ## Acknowledgements
 
-Mostly born out of boredom and my quest for knowledge, I borrowed a lot of ideas for this from work and legit DevOps blogs 
+I have to thank the work I do (DevOps) and my quests for knowledge and self-improvment as well a touch ot Parkinson's Law 
  
  - [Awesome-Compose](https://github.com/docker/awesome-compose)
  - [Awesome-Lists](https://github.com/sindresorhus/awesome)
