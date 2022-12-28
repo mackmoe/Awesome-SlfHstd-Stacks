@@ -1,5 +1,0 @@
-services:
-  sparkjava:
-    build: sparkjava
-    ports:
-      - 8080:8080
