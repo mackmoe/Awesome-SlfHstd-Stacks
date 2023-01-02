@@ -1,8 +1,8 @@
 ---
-version: '3.9'
+version: '3'
 services:
   plex:
-    image: lscr.io/linuxserver/plex:latest
+    image: linuxserver/plex:latest
     container_name: plex-ums
     hostname: plex
     domainname: plex.yourdomain.righthurr
@@ -10,28 +10,58 @@ services:
       - PUID=1000
       - PGID=1000
       - VERSION=docker
-      - TZ=America/Chicago
+      - TZ="YOUR-TIMEZONE"
       - runtime=nvidia
-      - PLEX_CLAIM=claim-TdqeS7NCCZsAjvpxAa93 # Generate new claim codes here: https://www.plex.tv/claim/
+      - PLEX_CLAIM= # Generate new claim codes here: https://www.plex.tv/claim/
     volumes:
       - /data/compose/plex/config:/config
       - /data/compose/plex/transcodes:/transcodes
-      - /data/compose/media/tv:/tv
-      - /data/compose/media/movies:/movies
-    networks:
-      - pihole_default
-      - media-traffic
+      - /home/monash/Backup_Disk/media/series:/tv
+      - /home/monash/Backup_Disk/media/films:/movies
+      - /home/monash/Backup_Disk/media/videos:/videos
     ports:
-      - 3005:3005
-      - 8324:8324
       - 32400:32400
-      - 32469:32469
-      - :5353/udp
       - :1900/udp
+      - :3005
+      - :5353/udp
+      - :8324
+      - :32469
       - :32410/udp
       - :32412/udp
       - :32413/udp
       - :32414/udp
+    restart: unless-stopped
+  tautulli:
+    image: lscr.io/linuxserver/tautulli:latest
+    container_name: tautulli-ums
+    domainname: tautulli.yourdomain.righthurr
+    hostname: Tautulli
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ="YOUR-TIMEZONE"
+    volumes:
+      - /data/compose/tautulli/config:/config
+      - /data/compose/tautulli/logs:/logs
+      - /data/compose/tautulli/cache:/cache
+    ports:
+      - 33436:8181
+    restart: unless-stopped
+  ombi:
+    image: lscr.io/linuxserver/ombi:latest
+    container_name: ombi-ums
+    hostname: ombi
+    domainname: ombi.yourdomain.righthurr
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ="YOUR-TIMEZONE"
+    volumes:
+      - /data/compose/ombi/config:/config
+      - /data/compose/ombi/data:/data
+      - /data/compose/ombi/cache:/cache
+    ports:
+      - 3579:3579
     restart: unless-stopped
   radarr:
     image: lscr.io/linuxserver/radarr:latest
@@ -41,17 +71,11 @@ services:
     environment:
       - PUID=1000
       - PGID=1000
-      - TZ=America/Chicago
+      - TZ="YOUR-TIMEZONE"
     volumes:
       - /data/compose/radarr:/config
       - /home/monash/Backup_Disk/media/movies:/movies #optional
       - /home/monash/Backup_Disk/media/downloads:/downloads #optional
-    networks:
-      - pihole_default
-      - media-traffic
-    networks:
-      - pihole_default
-      - media-traffic
     ports:
       - 7878:7878
     restart: unless-stopped
@@ -63,58 +87,40 @@ services:
     environment:
       - PUID=1000
       - PGID=1000
-      - TZ=America/Chicago
+      - TZ="YOUR-TIMEZONE"
     volumes:
       - /data/compose/sonarr:/config
-    networks:
-      - pihole_default
-      - media-traffic
-    networks:
-      - pihole_default
-      - media-traffic
-    dns_search: pihole.molovestoshare.com
-    hostname: tautulli
-    domainname: tautulli.molovestoshare.com
+      - /home/monash/Backup_Disk/media/tv:/series #optional
+      - /home/monash/Backup_Disk/media/downloads:/downloads #optional
     ports:
       - 8989:8989
     restart: unless-stopped
-  tautulli:
-    image: lscr.io/linuxserver/tautulli:latest
-    container_name: tautulli-ums
-    hostname: tautulli
-    domainname: tautulli.yourdomain.righthurr
+  flaresolverr:
+    # DockerHub mirror flaresolverr/flaresolverr:latest
+    image: ghcr.io/flaresolverr/flaresolverr:latest
+    container_name: prowlarr-flaresolverr-ums
+    hostname: flaresolverr
     environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=America/Chicago
-    volumes:
-      - /data/compose/tautulli/config:/config
-    networks:
-      - pihole_default
-      - media-traffic
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+      - LOG_HTML=${LOG_HTML:-false}
+      - CAPTCHA_SOLVER=${CAPTCHA_SOLVER:-none}
+      - TZ="YOUR-TIMEZONE"
     ports:
-      - 8181:8181
+      - "${PORT:-8191}:8191"
     restart: unless-stopped
-  ombi:
-    image: lscr.io/linuxserver/ombi:latest
-    container_name: ombi-ums
-    hostname: ombi
-    domainname: ombi.yourdomain.righthurr
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:develop
+    container_name: prowlarr-ums
+    domainname: prowlarr.yourdomain.righthurr
+    depends_on:
+      - flaresolverr
     environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=America/Chicago
+        - PUID=1000
+        - PGID=1000
+        - TZ="YOUR-TIMEZONE"
     volumes:
-      - /data/compose/ombi/config:/config
-    networks:
-      - pihole_default
-      - media-traffic
+        - /data/compose/prowlarr:/config
+        - /home/monash/Backup_Disk/media:/media
     ports:
-      - 3579:3579
+        - 9696:9696
     restart: unless-stopped
-
-networks:
-  pihole_default:
-    external: true
-  media-traffic:
-    internal: true
