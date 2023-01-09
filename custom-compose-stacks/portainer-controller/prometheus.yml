@@ -1,6 +1,6 @@
-iscrape_configs: # Note: copy this file to /data/compose/prometheus/prometheus.yml
+iscrape_configs: 
 - job_name: cadvisor
   scrape_interval: 5s
   static_configs:
   - targets:
-    - cadvisor:8080
+    - cadvisor:32797

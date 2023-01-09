@@ -5,12 +5,12 @@ services:
     image: linuxserver/plex:latest
     container_name: plex-ums
     hostname: plex
-    domainname: plex.yourdomain.righthurr
+    domainname: plex.molovestoshare.com
     environment:
       - PUID=1000
       - PGID=1000
       - VERSION=docker
-      - TZ="YOUR-TIMEZONE"
+      - TZ="America/Chicago"
       - runtime=nvidia
       - PLEX_CLAIM= # Generate new claim codes here: https://www.plex.tv/claim/
     volumes:
@@ -31,31 +31,15 @@ services:
       - :32413/udp
       - :32414/udp
     restart: unless-stopped
-  tautulli:
-    image: lscr.io/linuxserver/tautulli:latest
-    container_name: tautulli-ums
-    domainname: tautulli.yourdomain.righthurr
-    hostname: Tautulli
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ="YOUR-TIMEZONE"
-    volumes:
-      - /data/compose/tautulli/config:/config
-      - /data/compose/tautulli/logs:/logs
-      - /data/compose/tautulli/cache:/cache
-    ports:
-      - 33436:8181
-    restart: unless-stopped
   ombi:
     image: lscr.io/linuxserver/ombi:latest
     container_name: ombi-ums
     hostname: ombi
-    domainname: ombi.yourdomain.righthurr
+    domainname: ombi.molovestoshare.com
     environment:
       - PUID=1000
       - PGID=1000
-      - TZ="YOUR-TIMEZONE"
+      - TZ="America/Chicago"
     volumes:
       - /data/compose/ombi/config:/config
       - /data/compose/ombi/data:/data
@@ -67,15 +51,15 @@ services:
     image: lscr.io/linuxserver/radarr:latest
     container_name: radarr-ums
     hostname: radarr
-    domainname: radarr.yourdomain.righthurr
+    domainname: radarr.molovestoshare.com
     environment:
       - PUID=1000
       - PGID=1000
-      - TZ="YOUR-TIMEZONE"
+      - TZ="America/Chicago"
     volumes:
       - /data/compose/radarr:/config
-      - /home/monash/Backup_Disk/media/movies:/movies #optional
-      - /home/monash/Backup_Disk/media/downloads:/downloads #optional
+      - /home/monash/Backup_Disk/media/movies:/movies 
+      - /home/monash/Backup_Disk/media/downloads:/downloads
     ports:
       - 7878:7878
     restart: unless-stopped
@@ -83,44 +67,15 @@ services:
     image: lscr.io/linuxserver/sonarr:latest
     container_name: sonarr-ums
     hostname: sonarr
-    domainname: sonarr.yourdomain.righthurr
+    domainname: sonarr.molovestoshare.com
     environment:
       - PUID=1000
       - PGID=1000
-      - TZ="YOUR-TIMEZONE"
+      - TZ="America/Chicago"
     volumes:
       - /data/compose/sonarr:/config
-      - /home/monash/Backup_Disk/media/tv:/series #optional
-      - /home/monash/Backup_Disk/media/downloads:/downloads #optional
+      - /home/monash/Backup_Disk/media/tv:/series 
+      - /home/monash/Backup_Disk/media/downloads:/downloads
     ports:
       - 8989:8989
-    restart: unless-stopped
-  flaresolverr:
-    # DockerHub mirror flaresolverr/flaresolverr:latest
-    image: ghcr.io/flaresolverr/flaresolverr:latest
-    container_name: prowlarr-flaresolverr-ums
-    hostname: flaresolverr
-    environment:
-      - LOG_LEVEL=${LOG_LEVEL:-info}
-      - LOG_HTML=${LOG_HTML:-false}
-      - CAPTCHA_SOLVER=${CAPTCHA_SOLVER:-none}
-      - TZ="YOUR-TIMEZONE"
-    ports:
-      - "${PORT:-8191}:8191"
-    restart: unless-stopped
-  prowlarr:
-    image: lscr.io/linuxserver/prowlarr:develop
-    container_name: prowlarr-ums
-    domainname: prowlarr.yourdomain.righthurr
-    depends_on:
-      - flaresolverr
-    environment:
-        - PUID=1000
-        - PGID=1000
-        - TZ="YOUR-TIMEZONE"
-    volumes:
-        - /data/compose/prowlarr:/config
-        - /home/monash/Backup_Disk/media:/media
-    ports:
-        - 9696:9696
     restart: unless-stopped

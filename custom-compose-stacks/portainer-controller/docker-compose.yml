@@ -1,46 +1,57 @@
-version: '3.2'
+version: '3.9'
 services:
+  dozzle:
+    container_name: dozzle
+    image: amir20/dozzle:latest
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - 9999:8080
+    environment:
+      DOZZLE_LEVEL: trace
+    healthcheck:
+      test: [ "CMD", "/dozzle", "healthcheck" ]
+      interval: 5s
+      timeout: 10s
+      retries: 6
+      start_period: 30s
+  watchtower:
+    image: containrrr/watchtower
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+  portainer:
+    image: portainer/portainer-ce:latest
+    ports:
+      - 32772:9000
+    volumes:
+      - /data/compose/portainer:/data
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: unless-stopped
   prometheus:
     image: prom/prometheus:latest
     container_name: prometheus
     ports:
-    - :9090
+    - 9090:9090
     command:
     - --config.file=/etc/prometheus/prometheus.yml
     volumes:
-    - /data/compose/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
-    - /data/compose/prometheus_data:/etc/prometheus/data:rw
+    - /data/compose/prometheus_data/:/prometheus/data
     depends_on:
     - cadvisor
   cadvisor:
     image: gcr.io/cadvisor/cadvisor:latest
-    container_name: cadvisor-controller
+    container_name: cadvisor
     ports:
-      - :8080
+    - 32797:8080
     volumes:
-      - /:/rootfs:ro
-      - /var/run:/var/run:rw
-      - /sys:/sys:ro
-      - /var/lib/docker/:/var/lib/docker:ro
+    - /:/rootfs:ro
+    - /var/run:/var/run:rw
+    - /sys:/sys:ro
+    - /var/lib/docker/:/var/lib/docker:ro
     depends_on:
-      - redis
+    - redis
   redis:
     image: redis:latest
     container_name: redis
     ports:
-      - :6379
-  portainer:
-    image: portainer/portainer-ce:alpine
-    container_name: portainer-controller
-    command: -H unix:///var/run/docker.sock
-    ports:
-      - "32772:9000"
-    volumes:
-      - "/var/run/docker.sock:/var/run/docker.sock"
-      - "/data/compose/portainer:/data"
-    restart: always
-  watchtower:
-    container_name: watchtower-container
-    image: containrrr/watchtower
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
+    - 6379:6379

@@ -1,35 +1,13 @@
 version: "3.9"
 services:
-  node-red:
-    container_name: node-red
-    image: nodered/node-red:latest
-    environment:
-      - TZ=America/Chicago
-    ports:
-      - 32773:1880
-    networks:
-      - homer-frontend
-      - apps-backend
-    volumes:
-      - /data/compose/node-red:/data
-
   homer:
     container_name: homer
-    image: b4bz/homer
+    image: b4bz/homer:latest
     volumes:
       - /data/compose/homer:/www/assets
-    networks:
-      - homer-frontend
-      - apps-backend 
     ports:
-      - 32771:8080
+      - 34250:8080
     user: 1000:1000 # 1000 default
     environment:
       - INIT_ASSETS=1 # default
       - TZ=America/Chicago
-
-networks:
-  homer-frontend:
-    driver: bridge
-  apps-backend:
-    internal: true
