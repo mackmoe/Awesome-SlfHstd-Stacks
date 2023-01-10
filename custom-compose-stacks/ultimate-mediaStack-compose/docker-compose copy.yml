@@ -1,0 +1,124 @@
+---
+version: '3.9'
+services:
+  plex:
+    image: linuxserver/plex:latest
+    container_name: plex-ums
+    hostname: plex
+    domainname: plex.molovestoshare.com
+    environment:
+      - PUID=0
+      - PGID=0
+      - VERSION=docker
+      - TZ="America/Chicago"
+      - runtime=nvidia
+      - PLEX_CLAIM= # Generate new claim codes here: https://www.plex.tv/claim/
+    volumes:
+      - plex_container:/config
+      - plex_container:/transcodes
+      - tv:/tv
+      - movies:/movies
+      - /home/monash/Backup_Disk/media/videos:/videos
+      - /home/monash/Backup_Disk/media/audiobooks:/audiobooks
+      - /home/monash/Backup_Disk/media/photos:/photos
+    ports:
+      - 32400:32400
+      - :1900/udp
+      - :3005
+      - :5353/udp
+      - :8324
+      - :32469
+      - :32410/udp
+      - :32412/udp
+      - :32413/udp
+      - :32414/udp
+    restart: unless-stopped
+
+    
+  flaresolverr:
+    # DockerHub mirror flaresolverr/flaresolverr:latest
+    image: ghcr.io/flaresolverr/flaresolverr:latest
+    container_name: prowlarr-ums-flaresolverr
+    environment:
+      - LOG_LEVEL=${LOG_LEVEL:-debug}
+      - LOG_HTML=${LOG_HTML:-false}
+      - CAPTCHA_SOLVER=${CAPTCHA_SOLVER:-none}
+      - TZ=America/Chicago
+    ports:
+      - "8191:8191"
+    restart: unless-stopped
+  
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:develop
+    container_name: prowlarr-ums
+    domainname: prowlarr.molovestoshare.com
+    environment:
+      - PUID=0
+      - PGID=0
+      - TZ=America/Chicago
+    volumes:
+      - prowler_container:/config
+      - prowler_container:/media
+    ports:
+      - 9696:9696
+    restart: unless-stopped
+
+  ombi:
+    image: lscr.io/linuxserver/ombi:latest
+    container_name: ombi-ums
+    hostname: ombi
+    domainname: ombi.molovestoshare.com
+    environment:
+      - PUID=0
+      - PGID=0
+      - TZ="America/Chicago"
+    volumes:
+      - ombi_container:/config
+      - ombi_container:/data
+      - ombi_container:/cache
+      - movies:/movies
+    ports:
+      - 3579:3579
+    restart: unless-stopped
+  
+  radarr:
+    image: lscr.io/linuxserver/radarr:latest
+    container_name: radarr-ums
+    hostname: radarr
+    domainname: radarr.molovestoshare.com
+    environment:
+      - PUID=0
+      - PGID=0
+      - TZ="America/Chicago"
+    volumes:
+      - radarr_container:/config
+      - movies:/movies
+      - downloads:/downloads
+    ports:
+      - 7878:7878
+    restart: unless-stopped
+  
+  sonarr:
+    image: lscr.io/linuxserver/sonarr:latest
+    container_name: sonarr-ums
+    hostname: sonarr
+    domainname: sonarr.molovestoshare.com
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ="America/Chicago"
+    volumes:
+      - sonarr_container:/config
+      - tv:/tv
+      - downloads:/downloads
+    ports:
+      - 8989:8989
+    restart: unless-stopped
+  
+  volumes:
+    tv:
+    movies:
+    downloads:
+    plex_container:
+    radarr_container:
+    sonarr_container:

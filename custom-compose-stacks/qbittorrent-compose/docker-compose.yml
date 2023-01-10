@@ -1,52 +1,21 @@
 ---
-version: "3.9"
+version: '3.9'
 services:
-  flaresolverr:
-    image: ghcr.io/flaresolverr/flaresolverr:latest
-    container_name: flaresolverr
-    hostname: flaresolverr
-    environment:
-      - LOG_LEVEL=${LOG_LEVEL:-info}
-      - LOG_HTML=${LOG_HTML:-false}
-      - CAPTCHA_SOLVER=${CAPTCHA_SOLVER:-none}
-      - TZ=America/Chicago
-    ports:
-      - "${PORT:-8191}:8191"
-    restart: unless-stopped
   qbittorrent:
-    image: linuxserver/qbittorrent:latest
-    container_name: qbittorrunt-esgetit
+    image: lscr.io/linuxserver/qbittorrent:latest
+    container_name: qbittorrunt
     hostname: qbittorrunt
-    depends_on:
-      - flaresolverr
     environment:
-      - PUID=0
-      - PGID=0
+      - PUID=1000
+      - PGID=1000
       - TZ=America/Chicago
-      - WEBUI_PORT=35719
-      - WebUI\HostHeaderValidation=false
+      - WEBUI_PORT=MATCH-PORT
     volumes:
       - /data/compose/qbittorrent/data:/config
       - /data/compose/qbittorrent/qBittorrent.conf:/config/qBittorrent/qBittorrent.conf
       - /home/monash/Backup_Disk/media/downloads:/downloads
     ports:
-      - 35719:35719
-      - 6881:6881
-      - 6881:6881/udp
-    restart: unless-stopped
-  prowlarr:
-    image: lscr.io/linuxserver/prowlarr:develop
-    container_name: prowlarr-esgetit
-    domainname: prowlarr.molovestoshare.com
-    depends_on:
-      - flaresolverr
-    environment:
-        - PUID=0
-        - PGID=0
-        - TZ=America/Chicago
-    volumes:
-        - /data/compose/prowlarr:/config
-        - /home/monash/Backup_Disk/media:/media
-    ports:
-        - 9696:9696
+      - MATCH-PORT:MATCH-PORT
+      - :6881
+      - :6881/udp
     restart: unless-stopped

@@ -5,7 +5,7 @@ services:
     image: linuxserver/plex:latest
     container_name: plex-ums
     hostname: plex
-    domainname: plex.molovestoshare.com
+    domainname: plex.your.domain.name
     environment:
       - PUID=1000
       - PGID=1000
@@ -35,7 +35,7 @@ services:
     image: lscr.io/linuxserver/ombi:latest
     container_name: ombi-ums
     hostname: ombi
-    domainname: ombi.molovestoshare.com
+    domainname: ombi.your.domain.name
     environment:
       - PUID=1000
       - PGID=1000
@@ -51,7 +51,7 @@ services:
     image: lscr.io/linuxserver/radarr:latest
     container_name: radarr-ums
     hostname: radarr
-    domainname: radarr.molovestoshare.com
+    domainname: radarr.your.domain.name
     environment:
       - PUID=1000
       - PGID=1000
@@ -67,7 +67,7 @@ services:
     image: lscr.io/linuxserver/sonarr:latest
     container_name: sonarr-ums
     hostname: sonarr
-    domainname: sonarr.molovestoshare.com
+    domainname: sonarr.your.domain.name
     environment:
       - PUID=1000
       - PGID=1000
@@ -78,4 +78,20 @@ services:
       - /home/monash/Backup_Disk/media/downloads:/downloads
     ports:
       - 8989:8989
+    restart: unless-stopped
+    
+  prowlarr:
+    image: lscr.io/linuxserver/prowlarr:develop
+    container_name: prowlarr-esgetit
+    domainname: prowlarr.your.domain.name
+
+    environment:
+        - PUID=0
+        - PGID=0
+        - TZ=America/Chicago
+    volumes:
+        - /data/compose/prowlarr:/config
+        - /home/monash/Backup_Disk/media:/media
+    ports:
+        - 9696:9696
     restart: unless-stopped
