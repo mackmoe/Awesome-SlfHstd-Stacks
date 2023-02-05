@@ -4,8 +4,8 @@ services:
   plex:
     image: linuxserver/plex:latest
     container_name: plex-ums
-    hostname: plex
-    domainname: plex.your.domain.name
+    hostname: plex-ums
+    domainname: plex.molovestoshare.com
     environment:
       - PUID=1000
       - PGID=1000
@@ -16,9 +16,10 @@ services:
     volumes:
       - /data/compose/plex/config:/config
       - /data/compose/plex/transcodes:/transcodes
-      - /home/monash/Backup_Disk/media/series:/tv
-      - /home/monash/Backup_Disk/media/films:/movies
+      - /home/monash/Backup_Disk/media/tv:/tv
+      - /home/monash/Backup_Disk/media/movies:/movies
       - /home/monash/Backup_Disk/media/videos:/videos
+      - /home/monash/Backup_Disk/media/audiobooks:/music
     ports:
       - 32400:32400
       - :1900/udp
@@ -31,67 +32,19 @@ services:
       - :32413/udp
       - :32414/udp
     restart: unless-stopped
-  ombi:
-    image: lscr.io/linuxserver/ombi:latest
-    container_name: ombi-ums
-    hostname: ombi
-    domainname: ombi.your.domain.name
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ="America/Chicago"
-    volumes:
-      - /data/compose/ombi/config:/config
-      - /data/compose/ombi/data:/data
-      - /data/compose/ombi/cache:/cache
-    ports:
-      - 3579:3579
-    restart: unless-stopped
-  radarr:
-    image: lscr.io/linuxserver/radarr:latest
-    container_name: radarr-ums
-    hostname: radarr
-    domainname: radarr.your.domain.name
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ="America/Chicago"
-    volumes:
-      - /data/compose/radarr:/config
-      - /home/monash/Backup_Disk/media/movies:/movies 
-      - /home/monash/Backup_Disk/media/downloads:/downloads
-    ports:
-      - 7878:7878
-    restart: unless-stopped
-  sonarr:
-    image: lscr.io/linuxserver/sonarr:latest
-    container_name: sonarr-ums
-    hostname: sonarr
-    domainname: sonarr.your.domain.name
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ="America/Chicago"
-    volumes:
-      - /data/compose/sonarr:/config
-      - /home/monash/Backup_Disk/media/tv:/series 
-      - /home/monash/Backup_Disk/media/downloads:/downloads
-    ports:
-      - 8989:8989
-    restart: unless-stopped
-    
-  prowlarr:
-    image: lscr.io/linuxserver/prowlarr:develop
-    container_name: prowlarr-esgetit
-    domainname: prowlarr.your.domain.name
-
-    environment:
-        - PUID=0
-        - PGID=0
-        - TZ=America/Chicago
-    volumes:
-        - /data/compose/prowlarr:/config
-        - /home/monash/Backup_Disk/media:/media
-    ports:
-        - 9696:9696
-    restart: unless-stopped
+  # ombi:
+  #   image: lscr.io/linuxserver/ombi:latest
+  #   container_name: ombi-ums
+  #   hostname: ombi
+  #   domainname: ombi.your.domain.name
+  #   environment:
+  #     - PUID=1000
+  #     - PGID=1000
+  #     - TZ="America/Chicago"
+  #   volumes:
+  #     - /data/compose/ombi/config:/config
+  #     - /data/compose/ombi/data:/data
+  #     - /data/compose/ombi/cache:/cache
+  #   ports:
+  #     - 3579:3579
+  #   restart: unless-stopped
