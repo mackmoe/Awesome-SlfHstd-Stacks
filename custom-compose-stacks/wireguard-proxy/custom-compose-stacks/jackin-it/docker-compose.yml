@@ -1,0 +1,42 @@
+---
+version: '3'
+services:
+  wiregaurd-proxy:
+    image: linuxserver/wireguard:latest
+    container_name: wiregaurd-proxy
+    domainname: dbotz.molovestoshare.com
+    sysctls:
+      - net.ipv6.conf.all.disable_ipv6=1
+      - net.ipv4.conf.all.src_valid_mark=1
+    cap_add:
+        - NET_ADMIN
+        - SYS_MODULE
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=America/Chicago
+      - SERVERURL=dbotz.molovestoshare.com
+    volumes:
+      - /data/compose/wireguard-client:/config
+      - /lib/modules:/lib/modules
+    ports:
+      - 51820:51820/udp  #default port
+      - 8112:8112 #active port for deluge ui
+    restart: unless-stopped
+  deluge:
+    image: lscr.io/linuxserver/deluge:latest
+    container_name: deluge-ums
+    volumes:
+      - /data/compose/deluge:/config
+      - /home/monash/Backup_Disk/media/downloads:/downloads
+      - /home/monash/Backup_Disk/media/tv:/media/tv
+      - /home/monash/Backup_Disk/media/movies:/media/movies
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - HOME=/config
+      - WEB_PORT=8112
+      - TZ=America/Chicago
+    network_mode: container:wiregaurd-proxy      # The addition to add to all containers that you want to route through VPN container
+    restart: unless-stopped
+  
