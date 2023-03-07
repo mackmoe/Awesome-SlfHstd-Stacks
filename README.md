@@ -32,6 +32,7 @@ I have to thank the work I do (DevOps) and my quests for knowledge and self-impr
  - [Awesome-Lists](https://github.com/sindresorhus/awesome)
  - [Fleet](https://fleet.linuxserver.io)
  - [Awesome Slf Hosted Blogs](https://lmgtfy.app/?q=how+to+run+and+instal+docker+and+docker+compose)
+ - [LSIO - Wireguard Blog](https://www.linuxserver.io/blog/routing-docker-host-and-container-traffic-through-wireguard)
 
 
 
