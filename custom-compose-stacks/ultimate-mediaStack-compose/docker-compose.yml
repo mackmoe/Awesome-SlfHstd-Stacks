@@ -32,19 +32,3 @@ services:
       - :32413/udp
       - :32414/udp
     restart: unless-stopped
-  # ombi:
-  #   image: lscr.io/linuxserver/ombi:latest
-  #   container_name: ombi-ums
-  #   hostname: ombi
-  #   domainname: ombi.your.domain.name
-  #   environment:
-  #     - PUID=1000
-  #     - PGID=1000
-  #     - TZ="America/Chicago"
-  #   volumes:
-  #     - /data/compose/ombi/config:/config
-  #     - /data/compose/ombi/data:/data
-  #     - /data/compose/ombi/cache:/cache
-  #   ports:
-  #     - 3579:3579
-  #   restart: unless-stopped

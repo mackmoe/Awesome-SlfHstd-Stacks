@@ -1,7 +1,27 @@
 version: '3.9'
 services:
+  checkmk:
+    image: checkmk/check-mk-raw:2.1.0-latest
+    container_name: checkmk-controller
+    hostname: checkmk
+    cap_add:
+        - NET_ADMIN
+        - SYS_MODULE
+    environment:
+      - PUID=1000
+      - PGID=1000
+    tmpfs:
+      - /opt/omd/sites/cmk/tmp:uid=1000,gid=1000
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /data/compose/checkmk:/omd/sites
+    ports:
+      - 8080:5000
+      - 8000:8000
+    restart: always
   dozzle:
-    container_name: dozzle
+    container_name: dozzle-controller
+    hostname: dozzle
     image: amir20/dozzle:latest
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
@@ -16,10 +36,13 @@ services:
       retries: 6
       start_period: 30s
   watchtower:
+    container_name: watchtower-controller
     image: containrrr/watchtower
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
   portainer:
+    container_name: portainer-controller
+    hostname: portainer
     image: portainer/portainer-ce:latest
     ports:
       - 32772:9000
@@ -29,18 +52,21 @@ services:
     restart: unless-stopped
   prometheus:
     image: prom/prometheus:latest
-    container_name: prometheus
+    container_name: prometheus-controller
+    hostname: prometheus
     ports:
     - 9090:9090
     command:
-    - --config.file=/etc/prometheus/prometheus.yml
+    - --config.file=prometheus.yml
     volumes:
-    - /data/compose/prometheus_data/:/prometheus/data
+    - ./prometheus.yml:/prometheus/prometheus.yml
+    - /data/compose/prometheus_data:/prometheus/data
     depends_on:
-    - cadvisor
+      - cadvisor
   cadvisor:
-    image: gcr.io/cadvisor/cadvisor:latest
-    container_name: cadvisor
+    image: gcr.io/cadvisor/cadvisor:v0.46.0
+    container_name: cadvisor-controller
+    hostname: cadvisor
     ports:
     - 32797:8080
     volumes:
@@ -52,6 +78,7 @@ services:
     - redis
   redis:
     image: redis:latest
-    container_name: redis
+    container_name: redis-controller
+    hostname: redis
     ports:
     - 6379:6379

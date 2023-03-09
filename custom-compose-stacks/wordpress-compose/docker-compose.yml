@@ -1,40 +1,34 @@
-version: "3.9"
 services:
-  #MySQL Database image
   db:
-    image: mysql:8.0
-    container_name: wbdb
-    restart: unless-stopped
-    environment:
-      - MYSQL_DATABASE=_
-    volumes: 
-      - /data/compose/dbdata:/var/lib/mysql
+    container_name: wpblog-deebee
+    # We use a mariadb image which supports both amd64 & arm64 architecture
+    image: mariadb:10.6.4-focal
+    # If you really want to use MySQL, uncomment the following line
+    #image: mysql:8.0.27
     command: '--default-authentication-plugin=mysql_native_password'
-  
-  wordpress:
-    depends_on: 
-      - db
-    image: wordpress:5.1.1-fpm-alpine
-    container_name: wordpress
-    restart: unless-stopped
+    volumes:
+      - /data/compose/wordpress/mysql:/var/lib/mysql
     environment:
-      - WORDPRESS_DB_HOST=db:3306
-      - WORDPRESS_DB_USER=
-      - WORDPRESS_DB_PASSWORD=''
-      - WORDPRESS_DB_NAME=
+      - MYSQL_ROOT_PASSWORD=somewordpress
+      - MYSQL_DATABASE=wpblog_db
+      - MYSQL_USER=mysqlusr
+      - MYSQL_PASSWORD=secrtetpass
+    expose:
+      - 3306
+      - 33060
+    restart: always
+  wordpress:
+    container_name: wpblog-wp
+    domainname: wpblog.molovestoshare.com
+    image: wordpress:latest
     volumes:
-      - /data/compose/wordpress:/var/www/html
-
-
-  webserver:
-    depends_on:
-      - wordpress
-    image: nginx:1.15.12-alpine
-    container_name: wpwebserver
-    restart: unless-stopped
+      - /data/compose/wordpress/data:/var/www/html
     ports:
-      - :80
-    volumes:
-      - /data/compose/wordpress:/var/www/html
-      - /data/compose/nginx-conf:/etc/nginx/conf.d
-      - /data/compose/certbot-etc:/etc/letsencrypt
+      - 18206:80
+      - 39848:443
+    environment:
+      - WORDPRESS_DB_HOST=dbee
+      - WORDPRESS_DB_USER=mysqlusr
+      - WORDPRESS_DB_PASSWORD=secretpass
+      - WORDPRESS_DB_NAME=wpblog_db
+    restart: always

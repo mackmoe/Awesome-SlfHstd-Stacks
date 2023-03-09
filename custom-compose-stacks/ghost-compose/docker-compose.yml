@@ -1,0 +1,31 @@
+version: "3.3"
+services:
+  ghost:
+    image: ghost:latest
+    container_name: molo-ghost
+    restart: always
+    ports:
+      - "2368:2368"
+    depends_on:
+      - db
+    environment:
+      url: https://ghost.molovestoshare.com/
+      database__client: mysql
+      database__connection__host: db
+      database__connection__user: ghost
+      database__connection__password: ghostdbpass
+      database__connection__database: ghostdb
+    volumes:
+      - /data/compose/ghost/content:/var/lib/ghost/content
+
+  db:
+    image: mariadb:latest
+    container_name: ghost-deebee
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: your_mysql_root_password
+      MYSQL_USER: ghost
+      MYSQL_PASSWORD: ghostdbpass
+      MYSQL_DATABASE: ghostdb
+    volumes:
+      - /data/compose/ghost/mysql:/var/lib/mysql
